@@ -297,4 +297,44 @@ axes[0].scatter(X[:,0],X[:,1],c=y,cmap='prism',edgecolor='k',s=75)
 axes[1].scatter(X[:,0],X[:,1],c=km.labels_,cmap='jet',edgecolor='k',s=75)
 axes[0].set_title('Actual')
 axes[1].set_title('Predicted')
+
+plt.show()
+
+
+
+8. Implement the K-Means clustering algorithm using the <Iris.csv> dataset a) Conduct exploratory data analysis on the given dataset and report the details. b) Visualize the analysis results using (i) scatter plot (ii) histogram & (iii) box plot. c) Try with different K values and plot the graph for the k values.
+
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+data = pd.read_csv("/content/Iris.csv")# Load the Dataset
+
+# Exploratory Data Analysis 
+print("Dataset Preview:\n", data.head())
+print("\nStatistical Summary:\n", data.describe())
+print("\nMissing Values:\n", data.isnull().sum())
+print("\nDataset Information:\n")
+print(data.info())
+
+# Data Visualization
+# (i) Scatter Plot - Petal Length vs Sepal Length
+plt.figure(figsize=(8,6))
+sns.scatterplot(x="PetalLengthCm", y="SepalLengthCm", data=data, hue="Species")
+plt.title("Scatter Plot of Petal Length vs Sepal Length")
+plt.show()
+
+# (ii) Histogram - Distribution of Features
+data.iloc[:, 1:5].hist(bins=20, figsize=(10,6))
+plt.suptitle("Histogram of Iris Features")
+plt.show()
+
+# (iii) Box Plot - To visualize spread and outliers
+plt.figure(figsize=(8,6))
+sns.boxplot(data=data.iloc[:,1:5])
+plt.title("Box Plot of Iris Features")
 plt.show()
