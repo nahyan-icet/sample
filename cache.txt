@@ -1,0 +1,300 @@
+PROGRAM NO: 11 — Data Visualization (Iris Dataset)
+
+AIM:
+Implement data visualization for the Iris dataset using Matplotlib and Seaborn.
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from pandas.plotting import andrews_curves
+
+df = pd.read_csv("C:/Users/crana/Downloads/iris - iris.csv")
+
+# Basic info
+df.info()
+df.describe()
+df.isna().sum()
+
+# Histogram
+plt.figure(figsize=(10,7))
+x = pd.DataFrame({"sepallength":df['sepal.length'], "variety":df['variety']})
+x.pivot(columns="variety", values="sepallength").plot.hist()
+plt.title("Sepal Length in cm")
+plt.xlabel("Sepal Length")
+plt.ylabel("Frequency")
+
+# Boxplots
+sns.boxplot(data=df)
+plt.show()
+
+fig, axis = plt.subplots(2,2,figsize=(15,10))
+sns.boxplot(x="variety", y="sepal.length", data=df, ax=axis[0,0])
+sns.boxplot(x="variety", y="sepal.width", data=df, ax=axis[0,1])
+sns.boxplot(x="variety", y="petal.length", data=df, ax=axis[1,0])
+sns.boxplot(x="variety", y="petal.width", data=df, ax=axis[1,1])
+plt.show()
+
+# Scatter plots
+sns.FacetGrid(df,hue="variety",height=5).map(plt.scatter,"sepal.length","sepal.width").add_legend()
+plt.show()
+
+sns.FacetGrid(df,hue="variety",height=5).map(plt.scatter,"petal.length","petal.width").add_legend()
+plt.show()
+
+# Pairplot
+sns.pairplot(df,hue="variety",height=3)
+plt.show()
+
+# Andrews Curves
+andrews_curves(df, "variety")
+plt.show()
+
+
+
+
+PROGRAM NO: 12 — K-Nearest Neighbors (Iris Dataset)
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+
+iris = load_iris()
+x, y = iris.data, iris.target
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(x_train, y_train)
+y_pred = knn.predict(x_test)
+
+print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+sample = [[2,3,2,5]]
+pred = knn.predict(sample)
+print("Prediction:", iris.target_names[pred[0]])
+
+
+
+
+PROGRAM NO: 13 — K-Nearest Neighbors (Cancer Dataset)
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
+
+data = pd.read_csv("C:/Users/Student/Downloads/cancer.csv")
+
+data.drop("id", axis=1, inplace=True)
+le = LabelEncoder()
+data['diagnosis'] = le.fit_transform(data['diagnosis'])
+
+train, test = train_test_split(data, test_size=0.3)
+trainX, testX = train[data.columns[2:-1]], test[data.columns[2:-1]]
+trainY, testY = train['diagnosis'], test['diagnosis']
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(trainX, trainY)
+y_pred = knn.predict(testX)
+
+print("Accuracy:", accuracy_score(testY, y_pred))
+
+sample = [[15.78,17.89,103.6,781,0.0971,0.1292,0.09954,0.06606,0.1842,0.06082,
+           0.5058,0.9849,3.564,54.16,0.005771,0.04061,0.02791,0.01282,0.02008,
+           0.004144,20.42,27.28,136.5,1299,0.1396,0.5609,0.3965,0.181,0.3792]]
+pred = knn.predict(sample)
+print("Result:", "Malignant" if pred[0]==1 else "Benign")
+
+
+
+
+PROGRAM NO: 14 — Naive Bayes (Iris Dataset)
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=0)
+
+gnb = GaussianNB()
+y_pred = gnb.fit(X_train, y_train).predict(X_test)
+
+print("Naive Bayes Score:", gnb.score(X_test, y_test))
+
+x_new = [[5,5,4,4]]
+y_new = gnb.predict(x_new)
+print("Predicted output for [[5,5,4,4]]:", y_new)
+
+
+
+
+PROGRAM NO: 15 — Naive Bayes (Cancer Dataset)
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn import metrics, preprocessing
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+
+df = pd.read_csv("C:/Users/Student/Downloads/cancer.csv")
+le = preprocessing.LabelEncoder()
+df['diagnosis'] = le.fit_transform(df['diagnosis'])
+
+train, test = train_test_split(df, test_size=0.3)
+trainX, testX = train[df.columns[2:-1]], test[df.columns[2:-1]]
+trainY, testY = train['diagnosis'], test['diagnosis']
+
+gnb = GaussianNB()
+clf = gnb.fit(trainX, trainY)
+y_pred = clf.predict(testX)
+
+print("Accuracy:", metrics.accuracy_score(testY, y_pred)*100)
+
+cm = confusion_matrix(testY, y_pred)
+disp = metrics.ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Benign','Malignant'])
+disp.plot()
+plt.show()
+
+sample = [[11.94,18.24,75.71,437.6,0.08261,0.04751,0.01972,0.01349,0.1868,0.0611,
+           0.2273,0.6329,1.52,17.47,0.00721,0.00838,0.01311,0.008,0.01996,0.002635,
+           13.1,21.33,83.67,527.2,0.1144,0.08906,0.09203,0.06296,0.2785]]
+pred = clf.predict(sample)
+print("Result:", "Malignant" if pred[0]==1 else "Benign")
+
+
+
+
+PROGRAM NO: 16 — Decision Tree (Iris Dataset)
+
+from sklearn.datasets import load_iris
+from sklearn import metrics, tree
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+iris = load_iris()
+x_train, x_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3, random_state=1)
+
+clf = DecisionTreeClassifier()
+clf.fit(x_train, y_train)
+y_pred = clf.predict(x_test)
+print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+plt.figure(figsize=(15,10))
+tree.plot_tree(clf, filled=True, class_names=iris.target_names, feature_names=iris.feature_names)
+plt.show()
+
+
+
+
+PROGRAM NO: 17 — Decision Tree (Entropy Criterion)
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+
+x, y = load_iris(return_X_y=True)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
+
+clf = DecisionTreeClassifier(criterion="entropy")
+clf.fit(x_train, y_train)
+y_pred = clf.predict(x_test)
+print("Accuracy:", metrics.accuracy_score(y_pred, y_test)*100)
+
+cm = confusion_matrix(y_test, y_pred)
+disp = metrics.ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Setosa","Versicolor","Virginica"])
+disp.plot()
+plt.show()
+
+
+
+
+PROGRAM NO: 18 — Linear & Multiple Regression
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Linear Regression
+X, y = datasets.load_diabetes(return_X_y=True)
+X = X[:, np.newaxis, 2]
+X_train, X_test, y_train, y_test = X[:-20], X[-20:], y[:-20], y[-20:]
+
+regr = linear_model.LinearRegression()
+regr.fit(X_train, y_train)
+y_pred = regr.predict(X_test)
+
+print("MSE:", mean_squared_error(y_test, y_pred))
+print("R^2:", r2_score(y_test, y_pred))
+
+plt.scatter(X_test, y_test, color="black")
+plt.plot(X_test, y_pred, color="blue")
+plt.show()
+
+# Multiple Regression
+X, y = datasets.load_diabetes(return_X_y=True)
+X = X[:, [0,2]]
+X_train, X_test, y_train, y_test = X[:-20], X[-20:], y[:-20], y[-20:]
+regr.fit(X_train, y_train)
+y_pred = regr.predict(X_test)
+print("R^2 (multiple):", r2_score(y_test, y_pred))
+
+
+
+
+PROGRAM NO: 19 — Support Vector Machine (Iris Dataset)
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.svm import SVC
+
+iris = load_iris()
+x_train, x_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3, random_state=1)
+
+classifier = SVC(kernel='linear', random_state=0)
+classifier.fit(x_train, y_train)
+y_pred = classifier.predict(x_test)
+
+print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+sample = [[1,1,1,2]]
+pred = classifier.predict(sample)
+print("Prediction:", iris.target_names[pred[0]])
+
+
+
+
+PROGRAM NO: 20 — K-Means Clustering
+
+from sklearn import datasets
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+iris = datasets.load_iris()
+X = iris.data[:, :2]
+y = iris.target
+
+plt.scatter(X[:,0], X[:,1], c=y, cmap='prism')
+plt.xlabel('Sepal length')
+plt.ylabel('Sepal width')
+
+km = KMeans(n_clusters=3, init='k-means++', random_state=21)
+km.fit(X)
+centers = km.cluster_centers_
+print("Centers:", centers)
+
+fig, axes = plt.subplots(1,2,figsize=(16,8))
+axes[0].scatter(X[:,0],X[:,1],c=y,cmap='prism',edgecolor='k',s=75)
+axes[1].scatter(X[:,0],X[:,1],c=km.labels_,cmap='jet',edgecolor='k',s=75)
+axes[0].set_title('Actual')
+axes[1].set_title('Predicted')
+plt.show()
